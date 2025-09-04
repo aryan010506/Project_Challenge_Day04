@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Notes | Day 4</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8a2be2;
+            --primary-light: #9b4dff;
+            --secondary: #6a11cb;
+            --dark: #121212;
+            --dark-light: #1e1e1e;
+            --text: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --success: #00c853;
+            --danger: #ff5252;
+            --warning: #ffab00;
+            --info: #2196f3;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, var(--dark-light) 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .container {
+            display: flex;
+            flex: 1;
+        }
+        
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background-color: rgba(30, 30, 30, 0.8);
+            padding: 20px;
+            border-right: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .logo i {
+            font-size: 28px;
+            color: var(--primary);
+            margin-right: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .sidebar-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(138, 43, 226, 0.3);
+        }
+        
+        .search-container {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-container i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        
+        .search-container input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            background-color: #252525;
+            color: var(--text);
+        }
+        
+        .notes-list {
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .notes-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+        
+        .note-item {
+            padding: 15px;
+            background-color: #252525;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .note-item:hover {
+            background-color: #2a2a2a;
+            border-left: 3px solid var(--primary-light);
+        }
+        
+        .note-item.active {
+            background-color: #2a2a2a;
+            border-left: 3px solid var(--primary);
+        }
+        
+        .note-title {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .note-title i {
+            color: var(--warning);
+            font-size: 12px;
+        }
+        
+        .note-preview {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .note-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 8px;
+        }
+        
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            background-color: var(--dark-light);
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            border-radius: 5px 5px 0 0;
+            cursor: pointer;
+            background-color: #252525;
+            color: var(--text-muted);
+            transition: all 0.3s ease;
+        }
+        
+        .tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .editor-container {
+            display: flex;
+            flex: 1;
+            gap: 20px;
+        }
+        
+        .editor-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #252525;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .panel-header {
+            padding: 15px 20px;
+            background-color: #2a2a2a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .panel-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-icon {
+            padding: 8px;
+            border-radius: 5px;
+            background-color: #333;
+            color: var(--text);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-icon:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .panel-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .note-form {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        input, textarea {
+            padding: 12px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: #1e1e1e;
+            color: var(--text);
+            margin-bottom: 15px;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        #noteTitle {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        #noteContent {
+            flex: 1;
+            resize: none;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+        
+        #notePreview {
+            line-height: 1.6;
+        }
+        
+        #notePreview h1, #notePreview h2, #notePreview h3 {
+            margin-top: 1.2em;
+            margin-bottom: 0.6em;
+            color: var(--text);
+        }
+        
+        #notePreview p {
+            margin-bottom: 1em;
+        }
+        
+        #notePreview ul, #notePreview ol {
+            margin-left: 1.5em;
+            margin-bottom: 1em;
+        }
+        
+        #notePreview code {
+            background-color: #2d2d2d;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        #notePreview pre {
+            background-color: #2d2d2d;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin-bottom: 1em;
+        }
+        
+        #notePreview blockquote {
+            border-left: 4px solid var(--primary);
+            padding-left: 15px;
+            margin-left: 0;
+            color: var(--text-muted);
+        }
+        
+        #notePreview a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+        
+        #notePreview a:hover {
+            text-decoration: underline;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #444;
+        }
+        
+        .stats-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            flex: 1;
+            background-color: #252525;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            border-top: 1px solid #333;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #333;
+            }
+            
+            .editor-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-sticky-note"></i>
+                <h1>Markdown Notes</h1>
+            </div>
+            
+            <div class="sidebar-actions">
+                <button class="btn btn-primary" id="newNoteBtn">
+                    <i class="fas fa-plus"></i> New Note
+                </button>
+                <button class="btn" id="exportBtn">
+                    <i class="fas fa-file-export"></i> Export All
+                </button>
+            </div>
+            
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchNotes" placeholder="Search notes...">
+            </div>
+            
+            <div class="notes-list">
+                <div class="notes-section">
+                    <h3 class="section-title">Favorites</h3>
+                    <div id="favoriteNotes">
+                        <div class="empty-state">
+                            <i class="fas fa-star"></i>
+                            <p>No favorites yet</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="notes-section">
+                    <h3 class="section-title">All Notes</h3>
+                    <div id="notesList">
+                        <div class="empty-state">
+                            <i class="fas fa-sticky-note"></i>
+                            <p>No notes yet</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="tabs">
+                <div class="tab active" data-tab="edit">Edit</div>
+                <div class="tab" data-tab="preview">Preview</div>
+                <div class="tab" data-tab="stats">Statistics</div>
+            </div>
+            
+            <div class="editor-container">
+                <div class="editor-panel" id="editPanel">
+                    <div class="panel-header">
+                        <div class="panel-title">Editor</div>
+                        <div class="panel-actions">
+                            <button class="btn-icon" id="toggleFavorite" title="Add to favorites">
+                                <i class="far fa-star"></i>
+                            </button>
+                            <button class="btn-icon" id="downloadNote" title="Download note">
+                                <i class="fas fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <form class="note-form" id="noteForm">
+                            <input type="text" id="noteTitle" placeholder="Note Title" required>
+                            <textarea id="noteContent" placeholder="Write your note in markdown format..." required></textarea>
+                            <button type="submit" class="btn btn-primary">Save Note</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="editor-panel" id="previewPanel" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title">Preview</div>
+                        <div class="panel-actions">
+                            <button class="btn-icon" id="copyHtml" title="Copy as HTML">
+                                <i class="fas fa-code"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="panel-content">
+                        <div id="notePreview">
+                            <div class="empty-state">
+                                <i class="fas fa-eye"></i>
+                                <p>Preview will appear here</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="editor-panel" id="statsPanel" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title">Statistics</div>
+                    </div>
+                    <div class="panel-content">
+                        <div class="stats-container">
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalNotes">0</div>
+                                <div class="stat-label">Total Notes</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="totalChars">0</div>
+                                <div class="stat-label">Characters</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value" id="favoriteCount">0</div>
+                                <div class="stat-label">Favorites</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 30px;">
+                            <h3>Most Used Words</h3>
+                            <div id="wordCloud" style="margin-top: 15px; min-height: 100px;">
+                                <!-- Word cloud will be generated here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Created by Aryan Sunil • Day 4 of 30-Day Coding Challenge • Markdown Note-Taking App</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM elements
+            const noteForm = document.getElementById('noteForm');
+            const noteTitle = document.getElementById('noteTitle');
+            const noteContent = document.getElementById('noteContent');
+            const notePreview = document.getElementById('notePreview');
+            const notesList = document.getElementById('notesList');
+            const favoriteNotes = document.getElementById('favoriteNotes');
+            const newNoteBtn = document.getElementById('newNoteBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            const toggleFavorite = document.getElementById('toggleFavorite');
+            const downloadNote = document.getElementById('downloadNote');
+            const copyHtml = document.getElementById('copyHtml');
+            const searchInput = document.getElementById('searchNotes');
+            const tabs = document.querySelectorAll('.tab');
+            const panels = document.querySelectorAll('.editor-panel');
+            
+            // Stats elements
+            const totalNotes = document.getElementById('totalNotes');
+            const totalChars = document.getElementById('totalChars');
+            const favoriteCount = document.getElementById('favoriteCount');
+            const wordCloud = document.getElementById('wordCloud');
+            
+            // Current note state
+            let currentNoteId = null;
+            let notes = JSON.parse(localStorage.getItem('markdownNotes')) || [];
+            
+            // Initialize the app
+            function init() {
+                renderNotesList();
+                createNewNote();
+                updateStats();
+                
+                // Set up tab switching
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        const tabName = tab.getAttribute('data-tab');
+                        
+                        // Update active tab
+                        tabs.forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        
+                        // Show corresponding panel
+                        panels.forEach(panel => panel.style.display = 'none');
+                        document.getElementById(`${tabName}Panel`).style.display = 'flex';
+                        
+                        // If switching to preview tab, render preview
+                        if (tabName === 'preview') {
+                            renderPreview(noteContent.value);
+                        }
+                        
+                        // If switching to stats tab, update stats
+                        if (tabName === 'stats') {
+                            updateStats();
+                        }
+                    });
+                });
+            }
+            
+            // Render notes list
+            function renderNotesList() {
+                // Filter notes based on search
+                const searchTerm = searchInput.value.toLowerCase();
+                const filteredNotes = notes.filter(note => 
+                    note.title.toLowerCase().includes(searchTerm) || 
+                    note.content.toLowerCase().includes(searchTerm)
+                );
+                
+                // Render all notes
+                if (filteredNotes.length === 0) {
+                    notesList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-sticky-note"></i>
+                            <p>No notes found</p>
+                        </div>
+                    `;
+                } else {
+                    notesList.innerHTML = '';
+                    filteredNotes.forEach(note => {
+                        const noteElement = createNoteElement(note);
+                        notesList.appendChild(noteElement);
+                    });
+                }
+                
+                // Render favorite notes
+                const favoriteNotesList = notes.filter(note => note.favorite);
+                if (favoriteNotesList.length === 0) {
+                    favoriteNotes.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-star"></i>
+                            <p>No favorites yet</p>
+                        </div>
+                    `;
+                } else {
+                    favoriteNotes.innerHTML = '';
+                    favoriteNotesList.forEach(note => {
+                        const noteElement = createNoteElement(note);
+                        favoriteNotes.appendChild(noteElement);
+                    });
+                }
+            }
+            
+            // Create a note element for the list
+            function createNoteElement(note) {
+                const noteElement = document.createElement('div');
+                noteElement.className = 'note-item';
+                if (note.id === currentNoteId) {
+                    noteElement.classList.add('active');
+                }
+                
+                const date = new Date(note.updated);
+                const formattedDate = date.toLocaleDateString();
+                
+                noteElement.innerHTML = `
+                    <div class="note-title">
+                        <span>${note.title || 'Untitled Note'}</span>
+                        ${note.favorite ? '<i class="fas fa-star"></i>' : ''}
+                    </div>
+                    <div class="note-preview">${note.content.substring(0, 50)}${note.content.length > 50 ? '...' : ''}</div>
+                    <div class="note-meta">
+                        <span>${formattedDate}</span>
+                        <span>${note.content.length} chars</span>
+                    </div>
+                `;
+                
+                noteElement.addEventListener('click', () => loadNote(note.id));
+                return noteElement;
+            }
+            
+            // Load a note into the editor
+            function loadNote(id) {
+                const note = notes.find(note => note.id === id);
+                if (note) {
+                    currentNoteId = id;
+                    noteTitle.value = note.title;
+                    noteContent.value = note.content;
+                    
+                    // Update favorite button
+                    updateFavoriteButton(note.favorite);
+                    
+                    // Render preview if on preview tab
+                    if (document.querySelector('.tab.active').getAttribute('data-tab') === 'preview') {
+                        renderPreview(note.content);
+                    }
+                    
+                    renderNotesList();
+                }
+            }
+            
+            // Create a new note
+            function createNewNote() {
+                currentNoteId = Date.now().toString();
+                noteTitle.value = '';
+                noteContent.value = '';
+                renderPreview('');
+                
+                // Update favorite button
+                updateFavoriteButton(false);
+                
+                // Remove active class from all notes
+                const noteItems = document.querySelectorAll('.note-item');
+                noteItems.forEach(item => item.classList.remove('active'));
+            }
+            
+            // Render markdown preview
+            function renderPreview(markdown) {
+                if (!markdown.trim()) {
+                    notePreview.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-eye"></i>
+                            <p>Preview will appear here</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Simple markdown parsing
+                let html = markdown;
+                
+                // Headers
+                html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
+                html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
+                html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
+                html = html.replace(/^#### (.*$)/gim, '<h4>$1</h4>');
+                
+                // Bold and italic
+                html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
+                html = html.replace(/\*(.*?)\*/gim, '<em>$1</em>');
+                html = html.replace(/_(.*?)_/gim, '<em>$1</em>');
+                
+                // Links
+                html = html.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank">$1</a>');
+                
+                // Lists
+                html = html.replace(/^- (.*$)/gim, '<li>$1</li>');
+                html = html.replace(/^\d+\. (.*$)/gim, '<li>$1</li>');
+                html = html.replace(/(<li>.*<\/li>)/gim, '<ul>$1</ul>');
+                
+                // Code blocks
+                html = html.replace(/```([^`]+)```/gim, '<pre><code>$1</code></pre>');
+                html = html.replace(/`([^`]+)`/gim, '<code>$1</code>');
+                
+                // Blockquotes
+                html = html.replace(/^> (.*$)/gim, '<blockquote>$1</blockquote>');
+                
+                // Horizontal rules
+                html = html.replace(/^\*\*\*$/gim, '<hr>');
+                html = html.replace(/^---$/gim, '<hr>');
+                
+                // Line breaks
+                html = html.replace(/\n\n/gim, '</p><p>');
+                html = html.replace(/\n/gim, '<br>');
+                html = '<p>' + html + '</p>';
+                
+                notePreview.innerHTML = html;
+            }
+            
+            // Save note to local storage
+            function saveNote() {
+                const title = noteTitle.value.trim();
+                const content = noteContent.value.trim();
+                
+                if (!title && !content) return;
+                
+                const existingNoteIndex = notes.findIndex(note => note.id === currentNoteId);
+                
+                if (existingNoteIndex !== -1) {
+                    // Update existing note
+                    notes[existingNoteIndex] = {
+                        ...notes[existingNoteIndex],
+                        title,
+                        content,
+                        updated: new Date().toISOString()
+                    };
+                } else {
+                    // Create new note
+                    notes.push({
+                        id: currentNoteId,
+                        title,
+                        content,
+                        favorite: false,
+                        created: new Date().toISOString(),
+                        updated: new Date().toISOString()
+                    });
+                }
+                
+                localStorage.setItem('markdownNotes', JSON.stringify(notes));
+                renderNotesList();
+                updateStats();
+            }
+            
+            // Toggle favorite status
+            function toggleFavoriteStatus() {
+                const noteIndex = notes.findIndex(note => note.id === currentNoteId);
+                if (noteIndex !== -1) {
+                    notes[noteIndex].favorite = !notes[noteIndex].favorite;
+                    localStorage.setItem('markdownNotes', JSON.stringify(notes));
+                    updateFavoriteButton(notes[noteIndex].favorite);
+                    renderNotesList();
+                    updateStats();
+                }
+            }
+            
+            // Update favorite button appearance
+            function updateFavoriteButton(isFavorite) {
+                if (isFavorite) {
+                    toggleFavorite.innerHTML = '<i class="fas fa-star"></i>';
+                    toggleFavorite.style.color = 'var(--warning)';
+                } else {
+                    toggleFavorite.innerHTML = '<i class="far fa-star"></i>';
+                    toggleFavorite.style.color = 'var(--text)';
+                }
+            }
+            
+            // Export all notes
+            function exportAllNotes() {
+                const dataStr = JSON.stringify(notes, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = 'markdown-notes.json';
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+            }
+            
+            // Download current note as text file
+            function downloadCurrentNote() {
+                const title = noteTitle.value || 'untitled-note';
+                const content = `# ${noteTitle.value}\n\n${noteContent.value}`;
+                
+                const dataUri = 'data:application/text;charset=utf-8,'+ encodeURIComponent(content);
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', `${title}.md`);
+                linkElement.click();
+            }
+            
+            // Copy HTML to clipboard
+            function copyHtmlToClipboard() {
+                const htmlContent = notePreview.innerHTML;
+                navigator.clipboard.writeText(htmlContent).then(() => {
+                    // Show success feedback
+                    const originalHtml = copyHtml.innerHTML;
+                    copyHtml.innerHTML = '<i class="fas fa-check"></i>';
+                    setTimeout(() => {
+                        copyHtml.innerHTML = originalHtml;
+                    }, 2000);
+                });
+            }
+            
+            // Update statistics
+            function updateStats() {
+                // Update basic stats
+                totalNotes.textContent = notes.length;
+                
+                const totalCharacters = notes.reduce((acc, note) => acc + note.content.length, 0);
+                totalChars.textContent = totalCharacters.toLocaleString();
+                
+                const favorites = notes.filter(note => note.favorite).length;
+                favoriteCount.textContent = favorites;
+                
+                // Generate word cloud
+                generateWordCloud();
+            }
+            
+            // Generate simple word cloud
+            function generateWordCloud() {
+                // Extract all words from notes
+                let allText = '';
+                notes.forEach(note => {
+                    allText += ' ' + note.title + ' ' + note.content;
+                });
+                
+                // Clean and split text into words
+                const words = allText.toLowerCase()
+                    .replace(/[^\w\s]/g, '')
+                    .split(/\s+/)
+                    .filter(word => word.length > 3);
+                
+                // Count word frequency
+                const wordCount = {};
+                words.forEach(word => {
+                    wordCount[word] = (wordCount[word] || 0) + 1;
+                });
+                
+                // Get top 20 words
+                const topWords = Object.entries(wordCount)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 20);
+                
+                // Generate word cloud HTML
+                let cloudHtml = '';
+                topWords.forEach(([word, count]) => {
+                    const size = 10 + (count * 2);
+                    cloudHtml += `<span style="font-size: ${size}px; margin: 5px; display: inline-block;">${word}</span> `;
+                });
+                
+                wordCloud.innerHTML = cloudHtml || '<p>No data available</p>';
+            }
+            
+            // Event listeners
+            noteForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveNote();
+            });
+            
+            noteContent.addEventListener('input', function() {
+                if (document.querySelector('.tab.active').getAttribute('data-tab') === 'preview') {
+                    renderPreview(noteContent.value);
+                }
+            });
+            
+            newNoteBtn.addEventListener('click', createNewNote);
+            exportBtn.addEventListener('click', exportAllNotes);
+            toggleFavorite.addEventListener('click', toggleFavoriteStatus);
+            downloadNote.addEventListener('click', downloadCurrentNote);
+            copyHtml.addEventListener('click', copyHtmlToClipboard);
+            searchInput.addEventListener('input', renderNotesList);
+            
+            // Initialize the app
+            init();
+        });
+    </script>
+</body>
+</html>
